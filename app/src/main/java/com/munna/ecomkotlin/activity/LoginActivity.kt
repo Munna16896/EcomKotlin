@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.Response
@@ -22,6 +23,7 @@ class LoginActivity : AppCompatActivity() {
     lateinit var login_login: Button
     lateinit var sharedpreference: SharedPreferences
     lateinit var progressDialog: ProgressDialog
+    lateinit var tv_regsiter: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,8 +32,9 @@ class LoginActivity : AppCompatActivity() {
         login_username = findViewById(R.id.login_username)
         login_password = findViewById(R.id.login_password)
         login_login = findViewById(R.id.login_login)
+        tv_regsiter = findViewById(R.id.tv_regsiter)
 
-        progressDialog= ProgressDialog(LoginActivity@this)
+        progressDialog = ProgressDialog(LoginActivity@ this)
         progressDialog.setCancelable(false)
         progressDialog.setTitle("Please Wait...")
 
@@ -50,6 +53,11 @@ class LoginActivity : AppCompatActivity() {
                 login_username.isFocusable = true
             }
         })
+
+        tv_regsiter.setOnClickListener({
+            startActivity(Intent(LoginActivity@ this, RegistrationActivity::class.java))
+            finish()
+        })
     }
 
     fun loginMethod() {
@@ -60,15 +68,15 @@ class LoginActivity : AppCompatActivity() {
                 try {
                     progressDialog.dismiss()
                     var jsonObject = JSONObject(response)
-                    println("checklogin001="+jsonObject.getString("userid"))
-                    println("checklogin002="+jsonObject.getString("username"))
-                    println("checklogin003="+jsonObject.getString("mobileno"))
+                    println("checklogin001=" + jsonObject.getString("userid"))
+                    println("checklogin002=" + jsonObject.getString("username"))
+                    println("checklogin003=" + jsonObject.getString("mobileno"))
 
-                    var intent = Intent(LoginActivity@this,MainActivity::class.java)
-                    val sharedPreferences:SharedPreferences.Editor=sharedpreference.edit()
-                    sharedPreferences.putString("userid",jsonObject.getString("userid"))
-                    sharedPreferences.putString("username",jsonObject.getString("username"))
-                    sharedPreferences.putString("usermobileno",jsonObject.getString("mobileno"))
+                    var intent = Intent(LoginActivity@ this, MainActivity::class.java)
+                    val sharedPreferences: SharedPreferences.Editor = sharedpreference.edit()
+                    sharedPreferences.putString("userid", jsonObject.getString("userid"))
+                    sharedPreferences.putString("username", jsonObject.getString("username"))
+                    sharedPreferences.putString("usermobileno", jsonObject.getString("mobileno"))
                     sharedPreferences.apply()
                     sharedPreferences.commit()
                     startActivity(intent)
@@ -90,9 +98,9 @@ class LoginActivity : AppCompatActivity() {
                 Toast.makeText(this, "NetworkError:-" + error.toString(), Toast.LENGTH_LONG).show()
             }) {
             override fun getParams(): MutableMap<String, String> {
-                var map=HashMap<String,String>();
-                map.put("mobileno",login_username.text.toString().trim())
-                map.put("password",login_password.text.toString().trim())
+                var map = HashMap<String, String>();
+                map.put("mobileno", login_username.text.toString().trim())
+                map.put("password", login_password.text.toString().trim())
                 return map
             }
         }

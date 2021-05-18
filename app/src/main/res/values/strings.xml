@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">SDJ Ecom</string>
-    <string name="baseurl">http://192.168.59.81:9999/api/EcomApi/</string>
+    <string name="baseurl">http://192.168.147.81:9999/api/EcomApi/</string>
 
 </resources>

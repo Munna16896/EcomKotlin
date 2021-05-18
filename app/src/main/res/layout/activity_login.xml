@@ -136,7 +136,7 @@
                             android:backgroundTint="#005baa"
                             android:hint="Enter Password"
                             android:imeOptions="actionDone"
-                            android:inputType="number"
+                            android:inputType="textPassword"
                             android:maxLength="10"
                             android:text="" />
 
@@ -168,4 +168,16 @@
 
         </LinearLayout>
     </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_regsiter"
+        android:layout_width="fill_parent"
+        android:layout_height="35dp"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="Sign Up Now"
+        android:textColor="@color/white"
+        android:textSize="18dp"
+        android:textStyle="normal" />
 </RelativeLayout>
