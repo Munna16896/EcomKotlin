@@ -2,16 +2,19 @@ package com.munna.ecomkotlin.activity
 
 import android.app.ProgressDialog
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.munna.ecomkotlin.R
+import com.munna.ecomkotlin.model.CityModel
+import com.munna.ecomkotlin.model.StateModel
 import org.json.JSONObject
-import java.lang.Exception
+
 
 class RegistrationActivity : AppCompatActivity() {
     lateinit var register_username: EditText
@@ -24,6 +27,12 @@ class RegistrationActivity : AppCompatActivity() {
     lateinit var register_register: Button
     lateinit var tv_login: TextView
     lateinit var progressDialog: ProgressDialog
+    var statelist = ArrayList<StateModel>()
+    var citylist = ArrayList<CityModel>()
+    var stateid_str: String? = "0"
+    var statename_str: String? = "Select"
+    var cityid_str: String? = "0"
+    var cityname_str: String? = "Select"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +51,9 @@ class RegistrationActivity : AppCompatActivity() {
             progressDialog = ProgressDialog(RegistrationActivity@ this)
             progressDialog.setCancelable(false)
             progressDialog.setTitle("Please Wait...")
+
+            getStateMethod()
+            getCityMethod()
 
             tv_login.setOnClickListener({
                 try {
@@ -90,10 +102,166 @@ class RegistrationActivity : AppCompatActivity() {
         }
     }
 
+    private fun getStateMethod() {
+        try {
+            statelist.clear()
+            var stringRequest =
+                object : StringRequest(Request.Method.POST,
+                    getString(R.string.baseurl) + "GetState",
+                    Response.Listener { response ->
+                        progressDialog.dismiss()
+                        var jsonObject = JSONObject(response)
+                        if (jsonObject.getString("Status").equals("Success")) {
+                            var jsonArray = jsonObject.getJSONArray("Data")
+                            for (i in 0 until jsonArray.length()) {
+                                var jsonObject2 = jsonArray.getJSONObject(i)
+                                statelist.add(
+                                    StateModel(
+                                        jsonObject2.getString("stateid"), jsonObject2.getString(
+                                            "statename"
+                                        )
+                                    )
+                                )
+                            }
+                            val adapter: ArrayAdapter<StateModel> = ArrayAdapter<StateModel>(
+                                this,
+                                android.R.layout.simple_spinner_item,
+                                statelist
+                            )
+                            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                            register_spin_stateid.setAdapter(adapter)
+
+                            register_spin_stateid.onItemSelectedListener =
+                                object : AdapterView.OnItemSelectedListener {
+                                    override fun onItemSelected(
+                                        parent: AdapterView<*>,
+                                        view: View,
+                                        position: Int,
+                                        id: Long
+                                    ) {
+                                        stateid_str = statelist.get(position).stateid
+                                        statename_str = statelist.get(position).statename
+                                        println("Stateid001=" + stateid_str)
+                                        println("Stateid002=" + statename_str)
+                                    }
+
+                                    override fun onNothingSelected(parent: AdapterView<*>) {
+                                        // write code to perform some action
+                                    }
+                                }
+                        } else {
+                            Toast.makeText(
+                                RegistrationActivity@ this,
+                                jsonObject.getString("Message"),
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+
+                    },
+                    Response.ErrorListener { error ->
+                        progressDialog.dismiss()
+                        Toast.makeText(
+                            RegistrationActivity@ this,
+                            "Network Error:-" + error.toString(),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }) {
+                    override fun getParams(): MutableMap<String, String> {
+                        var map = HashMap<String, String>();
+                        return map
+                    }
+                }
+            var requestQueue = Volley.newRequestQueue(RegistrationActivity@ this)
+            requestQueue.add(stringRequest)
+            progressDialog.show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun getCityMethod() {
+        try {
+            citylist.clear()
+            var stringRequest =
+                object : StringRequest(Request.Method.POST,
+                    getString(R.string.baseurl) + "GetCity",
+                    Response.Listener { response ->
+                        progressDialog.dismiss()
+                        var jsonObject = JSONObject(response)
+                        if (jsonObject.getString("Status").equals("Success")) {
+                            var jsonArray = jsonObject.getJSONArray("Data")
+                            for (i in 0 until jsonArray.length()) {
+                                var jsonObject2 = jsonArray.getJSONObject(i)
+                                citylist.add(
+                                    CityModel(
+                                        jsonObject2.getString("stateid"), jsonObject2.getString(
+                                            "statename"
+                                        )
+                                    )
+                                )
+                            }
+                            val adapter: ArrayAdapter<CityModel> = ArrayAdapter<CityModel>(
+                                this,
+                                android.R.layout.simple_spinner_item,
+                                citylist
+                            )
+                            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                            register_spin_cityid.setAdapter(adapter)
+
+                            register_spin_cityid.onItemSelectedListener =
+                                object : AdapterView.OnItemSelectedListener {
+                                    override fun onItemSelected(
+                                        parent: AdapterView<*>,
+                                        view: View,
+                                        position: Int,
+                                        id: Long
+                                    ) {
+                                        cityid_str = citylist.get(position).cityid
+                                        cityname_str = citylist.get(position).cityname
+                                        println("Stateid003=" + cityid_str)
+                                        println("Stateid004" + cityname_str)
+                                    }
+
+                                    override fun onNothingSelected(parent: AdapterView<*>) {
+                                        // write code to perform some action
+                                    }
+                                }
+                        } else {
+                            Toast.makeText(
+                                RegistrationActivity@ this,
+                                jsonObject.getString("Message"),
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+
+                    },
+                    Response.ErrorListener { error ->
+                        progressDialog.dismiss()
+                        Toast.makeText(
+                            RegistrationActivity@ this,
+                            "Network Error:-" + error.toString(),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }) {
+                    override fun getParams(): MutableMap<String, String> {
+                        var map = HashMap<String, String>();
+                        return map
+                    }
+                }
+            var requestQueue = Volley.newRequestQueue(RegistrationActivity@ this)
+            requestQueue.add(stringRequest)
+            progressDialog.show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+
     private fun registerUserMethod() {
         try {
             var stringRequest =
-                object : StringRequest(Request.Method.POST, getString(R.string.baseurl) + "UserRegistration",
+                object : StringRequest(Request.Method.POST,
+                    getString(R.string.baseurl) + "UserRegistration",
                     Response.Listener { response ->
                         progressDialog.dismiss()
                         var jsonObject = JSONObject(response)
@@ -111,7 +279,8 @@ class RegistrationActivity : AppCompatActivity() {
                             ).show()
                         }
 
-                    }, Response.ErrorListener { error ->
+                    },
+                    Response.ErrorListener { error ->
                         progressDialog.dismiss()
                         Toast.makeText(
                             RegistrationActivity@ this,
